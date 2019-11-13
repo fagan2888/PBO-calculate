@@ -43,9 +43,9 @@ def calculate(df, column, S):
         for i in range(S):
             sample = df.iloc[int(i*len(df)//S):int((i+1)*len(df)//S)]
             if str(i) in trainingDataNo:
-                trainData = pd.concat([trainData, sample])
+                trainData = pd.concat([trainData, sample], axis = 0)
             else:
-                testData = pd.concat([testData, sample])
+                testData = pd.concat([testData, sample], axis = 0)
         # calculate
         trainDataSharpeRatio = trainData.mean() / trainData.std() 
         position = trainDataSharpeRatio.sort_values(ascending = False).rank().index[0]

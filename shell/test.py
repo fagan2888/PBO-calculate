@@ -5,10 +5,10 @@ import math
 import numpy as np
 from ipdb import set_trace
 
-## 列出所有可能，有放回。有顺序的结果
-#result = product('abc',repeat = 2)
-#print(list(set(result))[1])
-#
+# 列出所有可能，有放回。有顺序的结果
+result = product('1234567890abcdes',repeat = 8)
+print(len(set(result)))
+
 ## 列出所有可能，无放回，有顺序的结果（也即排列）
 #result = permutations('abc', 2)
 #print(set(result))
@@ -22,17 +22,5 @@ from ipdb import set_trace
 #print(set(result))
 #
 
-print(math.log(10))
-set_trace()
-df  = pd.DataFrame({'a':[1,2], 'b':[2,3.5], 'c':[3.6,4]})
-mean = df.mean()
-std = df.std()
-print(df)
-print(mean)
-print(std)
-position = mean.sort_values(ascending = False).rank().index[0]
-print(position)
-rank = std.rank()[position]
-print(rank)
 
 
