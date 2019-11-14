@@ -10,39 +10,41 @@ from itertools import combinations
 import math
 from sqlalchemy import *
 from config import uris
+from ipdb import set_trace
 
-key = 'multi_factor'
-def loadOriginData():
-    if key in uris.keys():
-        uri = uris[key]
+
+def loadOriginData(base = 'multi_factor',table = 'rank_z_score_descriptor_return_1021'):
+    if base in uris.keys():
+        uri = uris[base]
         conn = create_engine(uri)
     else:
         print('uri cannot found in config.py')
         return -1
 
-    sql_t = 'select * from rank_z_score_descriptor_return_1021'
+    sql_t = 'select * from '+table
     df = pd.read_sql(con=conn, sql=sql_t, parse_dates=['trade_date'], index_col=['descriptor', 'trade_date']).sort_index()
     return df
 
-df = loadOriginData()
+
 # cut origin data into S subsamples and make paris of IS and OOS
 # calculate ranks
 def calculate(df, column, S):
     df.sort_values(by = column, ascending = True, inplace = True)
     
-    signal = '1'
-    for i in range(1,S):
-        signal = signal + str(i+1)
+    signal = list()
+    for i in range(0,S):
+        signal.append(i)
     
     trainingDataNoGroup = list(set(combinations(signal, int(S/2))))
+   
+    lamdas = list()
     for trainingDataNo in trainingDataNoGroup:
         # for every case calculate the PBO
         trainData = pd.DataFrame(columns = list(df.columns))
         testData = pd.DataFrame(columns = list(df.columns))
-        lamdas = list()
         for i in range(S):
             sample = df.iloc[int(i*len(df)//S):int((i+1)*len(df)//S)]
-            if str(i) in trainingDataNo:
+            if i in trainingDataNo:
                 trainData = pd.concat([trainData, sample], axis = 0)
             else:
                 testData = pd.concat([testData, sample], axis = 0)
@@ -52,13 +54,29 @@ def calculate(df, column, S):
         testDataSharpeRatio = testData.mean() / testData.std()
         rank = testDataSharpeRatio.rank()[position] / (len(testDataSharpeRatio)+1)
         lamda = math.log(rank/(1-rank))
-        lamdas = lamdas.append(lamda)
+        lamdas = lamdas + [lamda]
     
     lamdas.sort()
 
     return lamdas
 
+# calculate PBO
+def PBO(lamdas):
+    count = len([num for num in lamdas if num < 0])
+    PBO = count / len(lamdas)
+    return PBO
+
+df = loadOriginData()
 column = 'trade_date'
 lamdas = calculate(df, column, 16)
 dfForSave = pd.DataFrame(lamdas, columns = ['lamda'])
 dfForSave.to_excel('lamda.xlsx')
+
+PBO = PBO(lamdas)
+print('PBO is ',PBO)
+
+if PBO < 0.5:
+    print ('it is very likely that this factor is useful')
+else:
+    print('useless factor')
+
