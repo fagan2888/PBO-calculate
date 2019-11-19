@@ -26,11 +26,11 @@ logging.basicConfig(filename = 'test.log')
 #result = combinations_with_replacement('abc', 2)
 #print(set(result))
 #
-test = 1
-if test == 0 :
-    loggerTest.info('ok'+datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-    
-else:
-    loggerTest.error('error'+datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+#test = 1
+#if test == 0 :
+#    loggerTest.info('ok'+datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+#    
+#else:
+#    loggerTest.error('error'+datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
-
+print(np.zeros(3)+ np.array([1,2,3]))
