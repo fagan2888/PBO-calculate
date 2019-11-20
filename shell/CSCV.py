@@ -12,7 +12,7 @@ from sqlalchemy import *
 from config import uris
 from ipdb import set_trace
 
-
+'''
 def loadOriginData(base = 'multi_factor',table = 'rank_z_score_descriptor_return_1021', columns = '*', dates = ['trade_date'], index = ['descriptor', 'trade_date'], filters = 'where 1'):
     if base in uris.keys():
         uri = uris[base]
@@ -24,12 +24,13 @@ def loadOriginData(base = 'multi_factor',table = 'rank_z_score_descriptor_return
     sql_t = 'select ' + columns + ' from '+ table + ' ' + filters
     df = pd.read_sql(con=conn, sql=sql_t, parse_dates = dates, index_col = index).sort_index()
     return df
-
+'''
 
 # cut origin data into S subsamples and make paris of IS and OOS
 # calculate ranks
 def calculate(df, column, S):
     df.sort_values(by = column, ascending = True, inplace = True)
+    df.set_index(column, inplace = True)
     
     signal = list()
     for i in range(0,S):
@@ -67,10 +68,9 @@ def PBO(lamdas):
     PBO = count / len(lamdas)
     return PBO
 
-df = loadOriginData(base = 'asset', table = 'mz_markowitz_nav', dates = ['mz_date'], index = ['mz_markowitz_id','mz_date'], filters = "where mz_markowitz_id = 'MZ.000060'")
-print(df)
-set_trace()
-column = 'mz_date'
+df = pd.read_csv('MZ.00006%.csv')
+df.drop(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '18'], axis=1, inplace = True)
+column = 'date'
 lamdas = calculate(df, column, 16)
 dfForSave = pd.DataFrame(lamdas, columns = ['lamda'])
 dfForSave.to_excel('lamda.xlsx')

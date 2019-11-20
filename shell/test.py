@@ -33,4 +33,7 @@ logging.basicConfig(filename = 'test.log')
 #else:
 #    loggerTest.error('error'+datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
-print(np.zeros(3)+ np.array([1,2,3]))
+a = pd.DataFrame({'index': [1,2,3], 'a': [1,2,3], 'b': [2,4,6], 'c': [3,6,9]})
+a.set_index('index', inplace = True)
+b = a.mean() / a.std()
+print(b)
