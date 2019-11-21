@@ -9,6 +9,7 @@ import numpy as np
 from itertools import combinations
 import math
 from sqlalchemy import *
+import loadData
 from config import uris
 from ipdb import set_trace
 
@@ -68,18 +69,20 @@ def PBO(lamdas):
     PBO = count / len(lamdas)
     return PBO
 
-df = pd.read_csv('MZ.00006%.csv')
-df.drop(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '18'], axis=1, inplace = True)
-column = 'date'
-lamdas = calculate(df, column, 16)
-dfForSave = pd.DataFrame(lamdas, columns = ['lamda'])
-dfForSave.to_excel('lamda.xlsx')
+if __name__ == '__main__':
+    df = loadData()
+#    df = pd.read_csv('MZ.00006%.csv')
+    df.drop(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '18'], axis=1, inplace = True)
+    column = 'date'
+    lamdas = calculate(df, column, 16)
+    dfForSave = pd.DataFrame(lamdas, columns = ['lamda'])
+    dfForSave.to_excel('lamda.xlsx')
 
-PBO = PBO(lamdas)
-print('PBO is ',PBO)
+    PBO = PBO(lamdas)
+    print('PBO is ',PBO)
 
-if PBO < 0.5:
-    print ('it is very likely that this factor is useful')
-else:
-    print('useless factor')
+    if PBO < 0.5:
+        print ('it is very likely that this factor is useful')
+    else:
+        print('useless factor')
 

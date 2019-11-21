@@ -45,12 +45,11 @@ def doer():
             k += 1
 
     newDf.set_index('date', inplace = True)
-    print(newDf)
-    set_trace()
-    newDf.to_csv('MZ.00006%.csv')
+#    newDf.to_csv('MZ.00006%.csv')
+    return newDf
 
 
 
 if __name__ == '__main__':
-    doer()
+    newDf = doer()
 
